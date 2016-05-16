@@ -1,26 +1,57 @@
 // JavaScript Document
-
 $(document).ready(function(e) {
-    document.addEventListener("deviceready",function(){
-		
-		$('#izquierda').on("swipeleft",function(){
-			navigator.notification. alert("Deslizo a la izquierda",function(){"Aplicacion5","Aceptar"});
-});
+//wachID se refiere a actual
 
-$('#derecha').on("swiperight",function(){
-	navigator.notification. confirm("¿Que quieres hacer?",function(opt){
-		switch(opt)
-		{
-			case 1:
-			navigator.notification.beep(1);
-			break;
-			
-			case 2:
-			navigator.notification.vibrate(1000);
-			break;
-		}
-	},"Aplicacion8","Beep, Vibra,Cancelar");
+var watchID=null;
+document.addEventListener("deviceready",Dispositivo_Listo,false);
+
+//Cuando esta listo el dispositivo
+function Dispositivo_Listo(){
+	Comienza();
+}
+
+//Empieza la observacion de la acelarecion 
+function Comienza(){
 	
-});
-	},false);
-});
+	//Actualiza la aceleracion cada 2 segundos
+	//
+	var opciones={frequency:2000};
+	
+	watchID=navigator.accelerometer.watchAcceleration(Correcto,Error,opciones);
+	navigator.geolocation.getCurrentPosition(Localiza, ErrorLocalizacion);
+}
+//Detiene la observacion de la aceleracion
+
+function Detente(){
+	if(watchID){
+		navigator.accelerometer.clearWatch (WatchID);
+		watchID=null;
+	}
+}
+//Correcto;Toma una captura de la aceleracion
+function Correcto(acceleration){
+	var element=document.getElementById('acelerometro');
+	
+	element.innerHTML='Aceleracion en X:'+acceleration.x+'<br/>'+
+	'Aceleracion en Y:'+acceleration.y+'<br/>'+
+	'intervalo:'+acceleration.timestamp+'<br/>';
+}
+
+//eRROR FALLA al obtener la acelaracion
+function Error(){
+	alert('Error!');
+}
+//Exito al localizar
+function Localiza(posicion){
+	var element=document.getElementById('geolocalizacion');
+	element.innerHTML='Latitud:'+posicion.coords.latitude+'<br/>'+
+	'Longitud:'+posicion.coords.longitude+'<br/>'+
+	'Precision:'+ posiscion.coords.accuracy+'<br/>'+
+	'Intervalo:'+posicion.timestamp+'<br/>';
+}
+//Error en la geolocalizacion
+function ErrorLocalizacion(error){
+	alert.('codigo:'+error.code+'\n'+
+	'mensaje:'+error.message+'\n');
+}
+});//document ready 
